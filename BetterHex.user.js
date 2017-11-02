@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.2
+// @version      0.21
 // @description  Better Hex adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -17,6 +17,15 @@
             var x = elm.value;
             var ownIP = document.getElementsByClassName("header-ip-show")[0].innerHTML;
             var button = document.getElementsByClassName("btn btn-inverse")[5];
+			if(x.search(ownIP) == -1){
+				gritterNotify({
+					title: "No IP found",
+					text: "The IP <b>"+ownIP+"</b> isnt present in the log",
+					image: "",
+					sticky: false
+				});
+				return false;
+			}
             x = x.replaceAll(ownIP,"");
             elm.value = x;
             button.click();
@@ -25,6 +34,30 @@
     var target = this;
         return target.replace(new RegExp(search, 'g'), replacement);
     };
+	
+	//Thanks to the Hex-Enhanced-Plus guys for this function
+	function gritterNotify(opts) {
+        if (!gritterLoaded) {
+            $('<link rel="stylesheet" type="text/css" href="css/jquery.gritter.css">').appendTo("head");
+            $.getScript("js/jquery.gritter.min.js", function() {
+                $.gritter.add({
+                    title: opts.title,
+                    text: opts.text,
+                    image: opts.img,
+                    sticky: opts.sticky
+                });
+            });
+            gritterLoaded = true;
+            return;
+        }
+        $.gritter.add({
+            title: opts.title,
+            text: opts.text,
+            image: opts.img,
+            sticky: opts.sticky
+        });
+    }
+	
     function loadLogFunc(){
         if(document.getElementsByName("log").length > 0){
             var li = document.createElement("li");
