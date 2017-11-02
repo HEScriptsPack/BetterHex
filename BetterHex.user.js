@@ -12,6 +12,104 @@
 
 (function() {
     'use strict';
+    function clearLogs(){
+            var elm = document.getElementsByName("log")[0];
+            var x = elm.value;
+            var ownIP = document.getElementsByClassName("header-ip-show")[0].innerHTML;
+            var button = document.getElementsByClassName("btn btn-inverse")[5];
+			if(x.search(ownIP) == -1){
+				gritterNotify({
+					title: "No IP found",
+					text: "The IP <b>"+ownIP+"</b> isnt present in the log",
+					image: "",
+					sticky: false
+				});
+				return false;
+			}
+            x = x.replaceAll(ownIP,"");
+            elm.value = x;
+            button.click();
+    }
+    String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
+    };
+	
+	function checkForBestServer(index, item){
+			// console.log("DEBUG: Index = "+index);
+			// console.log("DEBUG: Item = "+item);
+			$(item).children("small").each(function(childIndex, childItem){
+				switch(childIndex){
+					case 0:
+						if(childItem.innerHTML != "4 GHz"){
+							broke = true;
+							var x = upgradableServers.length;
+							upgradableServers[x] = index;
+							return false;
+						}
+						break;
+					case 1:
+						if(childItem.innerHTML != "10 GB"){
+							if(broke == true){ break;}
+							var x = upgradableServers.length;
+							upgradableServers[x] = index;
+							return false;
+						}
+						break;
+					case 2:
+						broke = false;
+						break;
+				}
+			});
+	}
+	
+	//Thanks to the Hex-Enhanced-Plus guys for this function
+	function gritterNotify(opts) {
+        if (!gritterLoaded) {
+            $('<link rel="stylesheet" type="text/css" href="css/jquery.gritter.css">').appendTo("head");
+            $.getScript("js/jquery.gritter.min.js", function() {
+                $.gritter.add({
+                    title: opts.title,
+                    text: opts.text,
+                    image: opts.img,
+                    sticky: opts.sticky
+                });
+            });
+            gritterLoaded = true;
+            return;
+        }
+        $.gritter.add({
+            title: opts.title,
+            text: opts.text,
+            image: opts.img,
+            sticky: opts.sticky
+        });
+    }
+	
+    function loadLogFunc(){
+        if(document.getElementsByName("log").length > 0){
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            var span = document.createElement("span");
+            var text = document.createTextNode("Remove your entries");
+            span.className = "hide-phone";
+            a.id = "LogfroLogClickID";
+            li.appendChild(a);
+            a.appendChild(span);
+            span.appendChild(text);
+            li.className = "link";
+            document.getElementsByClassName("nav nav-tabs")[0].appendChild(li);
+            $(document).ready(function(){
+                $("#LogfroLogClickID").on("click", function(){clearLogs();});
+            });
+        }
+    }
+	
+	function loadUpgradeFunc(){
+		var upgradableServers = [];
+		var servers = $(".list-user").each(function(index, item){ checkForBestServer(index, item); });
+		
+	}
     switch(window.location.href){
         case "https://legacy.hackerexperience.com/internet?view=logs":
             if(document.getElementsByClassName("label label-success pull-right").length < 1){
