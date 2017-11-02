@@ -1,0 +1,3 @@
+Ideas:
+	- Automate Clan wars
+	- Auto DDoS
