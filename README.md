@@ -10,4 +10,5 @@ If you have Tampermonkey installed click [this](https://gitcdn.xyz/repo/Logfro/B
 
 <h2>Donating</h2>
 
-For some features i need money, my Ingame BTC: 1p82FceyJrj6YFZz3HNiQEmidPuLCrriRz
+For some features i need money, so if you have some btc to spare i am happy to take it :)
+My ingame BTC: 1p82FceyJrj6YFZz3HNiQEmidPuLCrriRz
