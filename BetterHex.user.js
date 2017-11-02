@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.21
+// @version      0.22
 // @description  Better Hex adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -18,12 +18,7 @@
             var ownIP = document.getElementsByClassName("header-ip-show")[0].innerHTML;
             var button = document.getElementsByClassName("btn btn-inverse")[5];
 			if(x.search(ownIP) == -1){
-				gritterNotify({
-					title: "No IP found",
-					text: "The IP <b>"+ownIP+"</b> isnt present in the log",
-					image: "",
-					sticky: false
-				});
+				alert("Your IP ("+ownIP+") isnt present in this log!");
 				return false;
 			}
             x = x.replaceAll(ownIP,"");
@@ -36,8 +31,6 @@
     };
 	
 	function checkForBestServer(index, item){
-			// console.log("DEBUG: Index = "+index);
-			// console.log("DEBUG: Item = "+item);
 			$(item).children("small").each(function(childIndex, childItem){
 				switch(childIndex){
 					case 0:
@@ -63,46 +56,21 @@
 			});
 	}
 	
-	//Thanks to the Hex-Enhanced-Plus guys for this function
-	function gritterNotify(opts) {
-        if (!gritterLoaded) {
-            $('<link rel="stylesheet" type="text/css" href="css/jquery.gritter.css">').appendTo("head");
-            $.getScript("js/jquery.gritter.min.js", function() {
-                $.gritter.add({
-                    title: opts.title,
-                    text: opts.text,
-                    image: opts.img,
-                    sticky: opts.sticky
-                });
-            });
-            gritterLoaded = true;
-            return;
-        }
-        $.gritter.add({
-            title: opts.title,
-            text: opts.text,
-            image: opts.img,
-            sticky: opts.sticky
-        });
-    }
-	
     function loadLogFunc(){
-        if(document.getElementsByName("log").length > 0){
-            var li = document.createElement("li");
-            var a = document.createElement("a");
-            var span = document.createElement("span");
-            var text = document.createTextNode("Remove your entries");
-            span.className = "hide-phone";
-            a.id = "LogfroLogClickID";
-            li.appendChild(a);
-            a.appendChild(span);
-            span.appendChild(text);
-            li.className = "link";
-            document.getElementsByClassName("nav nav-tabs")[0].appendChild(li);
-            $(document).ready(function(){
-                $("#LogfroLogClickID").on("click", function(){clearLogs();});
-            });
-        }
+		var li = document.createElement("li");
+		var a = document.createElement("a");
+		var span = document.createElement("span");
+		var text = document.createTextNode("Remove your entries");
+		span.className = "hide-phone";
+		a.id = "LogfroLogClickID";
+		li.appendChild(a);
+		a.appendChild(span);
+		span.appendChild(text);
+		li.className = "link";
+		document.getElementsByClassName("nav nav-tabs")[0].appendChild(li);
+		$(document).ready(function(){
+			$("#LogfroLogClickID").on("click", function(){clearLogs();});
+        });
     }
 	
 	function loadUpgradeFunc(){
@@ -112,7 +80,12 @@
 	}
     switch(window.location.href){
         case "https://legacy.hackerexperience.com/internet?view=logs":
-            if(document.getElementsByClassName("label label-success pull-right").length < 1){
+            if(document.getElementsByName("log").length > 0){
+                loadLogFunc();
+            }
+            break;
+        case "https://legacy.hackerexperience.com/internet":
+            if(document.getElementsByName("log").length > 0){
                 loadLogFunc();
             }
             break;
@@ -120,4 +93,9 @@
             break;
 
     }
+	var realConfirm=window.confirm;
+    window.confirm=function(){
+        window.confirm=realConfirm;
+        return true;
+    };
 })();

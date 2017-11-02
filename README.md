@@ -4,3 +4,4 @@ If you have Tampermonkey installed click [this](https://gitcdn.xyz/repo/Logfro/B
 
 <b>Current functions</b>
 - Button to remove every occurence of your ip from victims log and commit that log
+- Fixes Bug where Alert window comes up if you want to finish a process, when you have a ip reset ready
