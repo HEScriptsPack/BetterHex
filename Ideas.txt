@@ -1,3 +1,4 @@
 Ideas:
 	- Automate Clan wars
 	- Auto DDoS
+	- Auto upgrade Servers (work in progress)
