@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.22
+// @version      0.3
 // @description  Better Hex adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -56,6 +56,31 @@
 			});
 	}
 	
+		
+	function clearOwnLogs(){
+		$.post("https://legacy.hackerexperience.com/logEdit", { id: "1", log:""}, function(result){
+			var w = window.open("https://legacy.hackerexperience.com/", "logEdit", "width=600,height=400,status=yes,scrollbars=yes,resizable=yes");
+			w.document.open();
+			w.document.write(result);
+			w.document.close();
+			var realConfirm=w.confirm;
+				w.confirm=function(){
+				w.confirm=realConfirm;
+				return true;
+			};
+			var seconds = 4500;
+			setTimeout(function(){
+				var a = w.$(".elapsed")[0].innerText;
+				a = a.split(':');
+				seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]) * 1000;
+			},500);
+			$(w.document).ready(function(){
+				setTimeout(function(){
+					w.close();
+				},seconds);
+			});
+		});
+	}
     function loadLogFunc(){
 		var li = document.createElement("li");
 		var a = document.createElement("a");
@@ -78,6 +103,8 @@
 		var servers = $(".list-user").each(function(index, item){ checkForBestServer(index, item); });
 		
 	}
+	
+
     switch(window.location.href){
         case "https://legacy.hackerexperience.com/internet?view=logs":
             if(document.getElementsByName("log").length > 0){
@@ -89,12 +116,17 @@
                 loadLogFunc();
             }
             break;
+		case "https://legacy.hackerexperience.com/internet?ip=160.7.191.179":
+			if($(".alert-success").length > 1 && $("#btc-login").length < 0){
+				clearOwnLogs();
+			}
+			break;
         default:
             break;
 
     }
 	var realConfirm=window.confirm;
-    window.confirm=function(){
+		window.confirm=function(){
         window.confirm=realConfirm;
         return true;
     };
