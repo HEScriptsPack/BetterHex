@@ -2,3 +2,4 @@ Ideas:
 	- Automate Clan wars
 	- Auto DDoS
 	- Auto upgrade Servers (work in progress)
+        - Better HDB with auto virus upgrade or change (NubHax)
