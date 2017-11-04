@@ -170,7 +170,7 @@
             }
             break;
 		case "https://legacy.hackerexperience.com/internet?ip=160.7.191.179":
-			if($(".alert-success").length > 1 && $("#btc-login").length < 0 && $(".alert-success")[0].innerText.indexOf("You logged in to the address") > -1){
+			if($(".alert-success").length > 1 && $("#btc-login").length < 1 && $(".alert-success")[0].innerText.indexOf("You logged in to the address") > -1){
 				clearOwnLogs();
 			}
 			break;
