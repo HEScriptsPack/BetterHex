@@ -1,7 +1,7 @@
 Ideas:
+	- Auto upgrade Servers (work in progress)
 	- Automate Clan wars
 	- Auto DDoS
-	- Auto upgrade Servers (work in progress)
-        - Better HDB with auto virus upgrade or change (NubHax)
-        - Button at Victim which auto hacks and deletes log
-	
+    - Better HDB with auto virus upgrade or change (NubHax)
+    - Button at Victim which auto hacks and deletes log
+	- Kind of like Webcrawler for Bitcoin (IpsilonX)
