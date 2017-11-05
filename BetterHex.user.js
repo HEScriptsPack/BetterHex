@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.4
+// @version      0.41
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -129,8 +129,22 @@
 			});
 		});
 	}
+	function addBarBtn(name, btnId, spanId){
+		var parentElem = document.getElementsByClassName("btn-group")[0];
+		var li = document.createElement("li");
+		var a = document.createElement("a");
+		var span = document.createElement("span");
+		$(li).addClass("btn btn-inverse")
+		li.id = btnId;
+		$(li).addClass("text");
+		span.id = spanId;
+		span.innerText = name;
+		a.appendChild(span);
+		li.appendChild(a);
+		parentElem.insertBefore(li, parentElem.children[1]);
+	}
 
-	function addButton(name, id){
+	function addNavButton(name, id){
 		var li = document.createElement("li");
 		var a = document.createElement("a");
 		var span = document.createElement("span");
@@ -144,20 +158,28 @@
 		document.getElementsByClassName("nav nav-tabs")[0].appendChild(li);
 	}
     function loadLogFunc(){
-		addButton("Remove your entries","LogfroLogClickID");
+		addNavButton("Remove your entries","LogfroLogClickID");
 		$(document).ready(function(){
 			$("#LogfroLogClickID").on("click", function(){clearLogs();});
         });
     }
 
 	function loadUpgradeFunc(){
-		addButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
+		addNavButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
 		$(document).ready(function(){
 			$("#LogfroHWAutoUpgradeAll").on("click",function(){ initUpgradeAllMaxedOut();});
 		});
 	}
+	
+	function loadClearOwnLogBtn(){
+		addBarBtn("Clear own logs","LogfroClearOwnLogsBtn","LogfroClearOwnLogsBtnSpan");
+		$(document).ready(function(){
+			$("#LogfroClearOwnLogsBtn").on("click", function(){clearOwnLogs();});
+        });
+	}
 
-
+	loadClearOwnLogBtn();
+	
     switch(window.location.href){
         case "https://legacy.hackerexperience.com/internet?view=logs":
             if(document.getElementsByName("log").length > 0){

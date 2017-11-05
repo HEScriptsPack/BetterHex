@@ -8,6 +8,7 @@ If you have Tampermonkey installed click [this](https://gitcdn.xyz/repo/Logfro/B
 - Fixes Bug where Alert window comes up if you want to finish a process, when you have a ip reset ready
 - After pressing login button by the BTC market autoamtically wipes own log (Popup needs to be allowed for the page)
 - Auto upgrade Button for servers (Popup needs to be allowed for the page, Not completely finished yet)
+- Clear Own Logs Button at the top (Popup needs to be allowed for the page)
 
 <h2>Suggestions</h2>
 
