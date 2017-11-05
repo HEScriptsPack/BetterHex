@@ -16,7 +16,7 @@
             var elm = document.getElementsByName("log")[0];
             var x = elm.value;
             var ownIP = document.getElementsByClassName("header-ip-show")[0].innerHTML;
-            var button = document.getElementsByClassName("btn btn-inverse")[5];
+            var button = $("input.btn-inverse").get(1);
 			if(x.search(ownIP) == -1){
 				alert("Your IP ("+ownIP+") isnt present in this log!");
 				return false;
