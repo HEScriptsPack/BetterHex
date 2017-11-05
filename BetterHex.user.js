@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.41
+// @version      0.42
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -172,8 +172,8 @@
 	}
 	
 	function loadClearOwnLogBtn(){
-		addBarBtn("Clear own logs","LogfroClearOwnLogsBtn","LogfroClearOwnLogsBtnSpan");
 		$(document).ready(function(){
+			addBarBtn("Clear own logs","LogfroClearOwnLogsBtn","LogfroClearOwnLogsBtnSpan");
 			$("#LogfroClearOwnLogsBtn").on("click", function(){clearOwnLogs();});
         });
 	}
