@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.42
+// @version      0.43
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -198,6 +198,9 @@
 			break;
 		case "https://legacy.hackerexperience.com/hardware":
 			loadUpgradeFunc();
+			break;
+		case "https://legacy.hackerexperience.com/list?action=collect&show=last":
+			clearOwnLogs();
 			break;
         default:
             break;
