@@ -134,7 +134,7 @@
 		var li = document.createElement("li");
 		var a = document.createElement("a");
 		var span = document.createElement("span");
-		$(li).addClass("btn btn-inverse")
+		$(li).addClass("btn btn-inverse");
 		li.id = btnId;
 		$(li).addClass("text");
 		span.id = spanId;
