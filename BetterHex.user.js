@@ -105,6 +105,7 @@
 		var w = window.open(url, name, "width=600,height=400,status=yes,scrollbars=yes,resizable=yes");
 		return w;
 	}
+	
 	function clearOwnLogs(){
 		$.post("https://legacy.hackerexperience.com/logEdit", { id: "1", log:""}, function(result){
 			var w = openPopUp("https://legacy.hackerexperience.com/","logEdit");
@@ -116,16 +117,20 @@
 				w.confirm=realConfirm;
 				return true;
 			};
-			var seconds = 4500;
-			setTimeout(function(){
-				var a = w.$(".elapsed")[0].innerText;
-				a = a.split(':');
-				seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]) * 1000;
-			},500);
+			var seconds;
 			$(w.document).ready(function(){
 				setTimeout(function(){
-					w.close();
-				},seconds);
+					var a = w.$(".elapsed")[0].innerText;
+					a = a.replace("h","");
+					a = a.replace("m","");
+					a = a.replace("s","");
+					a = a.split(':');
+					seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]) * 1000 + 1000;
+					console.log(seconds);
+					setTimeout(function(){
+						w.close();
+					},seconds);
+				},500);
 			});
 		});
 	}
