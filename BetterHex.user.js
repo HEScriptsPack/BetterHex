@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.43
+// @version      0.44
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -9,6 +9,11 @@
 // @downloadURL  https://gitcdn.xyz/repo/Logfro/BetterHex/master/BetterHex.user.js
 // @grant        none
 // ==/UserScript==
+
+const account = '874999969';
+var totalServers = $(".widget-content.padding > ul > a").length;
+var index = 0;
+var interval;
 
 (function() {
     'use strict';
@@ -29,41 +34,90 @@
     var target = this;
         return target.replace(new RegExp(search, 'g'), replacement);
     };
+	
+	/* Thanks Omega for this Function */
+	function upgrade(){
+		$('.label.label-info').html("Completed: " + index + "/" + totalServers);
 
-	function upgradeServerMax(){
-		$(document).ready(function(){
-			setTimeout(function(){
-				if($("#cpu4000 td")[3].innerText == "$5,000" && $("#cpu3500").length){
-					$("#4000").click();
-					setTimeout(function(){
-						$("#modal-form").submit();
-					},2500);
-				}
-				if($("#hdd10000 td")[3].innerText == "$8,000" && $("#hdd5000").length){
-					$("#10000").click();
-					setTimeout(function(){
-						$("#modal-form").submit();
-					},2500);
-				}
-			},1000);
+		var server = $(".widget-content.padding > ul > a").eq(index);
+		var cpuUnit = server.find(".list-user > small").eq(0).text();
+		var hddUnit = server.find(".list-user > small").eq(1).text();
+
+		while(cpuUnit == "4 GHz" && hddUnit == "10 GB" && index < totalServers)
+		{
+			index++;
+			server = $(".widget-content.padding > ul > a").eq(index);
+			cpuUnit = server.find(".list-user > small").eq(0).text();
+			hddUnit = server.find(".list-user > small").eq(1).text();
+		}
+		if(index >= totalServers)
+		{
+			clearInterval(interval);
+			$('.label.label-info').html("Done :)");
+		}
+		else
+		{
+			var serverID = server.attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
+			getData('upgrade', serverID);
+		}
+	}
+
+	function getData(itemToBuy, id){
+		$.ajax({
+			type: 'GET',
+			url: "/hardware?opt=" + itemToBuy + "&id=" + id,
+			data: {
+				opt: itemToBuy,
+				acc: account
+			},
+			success: function(data) {
+				console.log("Success");
+				postData('cpu','5000','8');
+				postData('hdd','8000','6');
+				index++;
+			}
 		});
 	}
-	function initUpgradeAllMaxedOut(){
-		var upgradableServers = [];
-		var index2 = -1;
-		$(".list-user").each(function(index, item){ upgradableServers = checkForBestServer(index, item, upgradableServers, "cpu"); index2 = index; });
-		$(".list-user").each(function(index, item){ upgradableServers = checkForBestServer(index, item, upgradableServers, "hdd"); index2 = index; });
+
+	function postData(itemToBuy, itemCost, itemId){
+		var dataObject = {};
+		dataObject.acc = account;
+		dataObject.act = itemToBuy;
+		dataObject['part-id'] = itemId;
+		dataObject.price = itemCost;
+		$.ajax({
+			type: 'POST',
+			data: dataObject,
+			error: function() {
+			console.log("Already upgraded!");
+		}
+		});
+	}
+	
+	function upgradeHDDMaxedOut(){
+		
+	}
+
+	function buyNewHDD(times){
+		if(times.length < 1){
+			alert("You need to type in a number!");
+			return false;
+		}
+		if(isNaN(times)){
+			alert("Not a number!");
+			return false;
+		}
 		var x = 0;
-		function openUpgrade(callback){
-			if(x == index2){ return false; }
-			var url = getUpgradeURL(upgradableServers[x]);
-			if(url == "https://legacy.hackerexperience.com/undefined"){ return false; }
-			var w = openPopUp(url+"#UpgradeScript", "Upgrade");
+		function upgrade(){
+			var acc = $("#select-bank-acc")[0].value;
+			var w = openPopUp("https://legacy.hackerexperience.com/hardware?opt=xhd&acc="+acc+"#buy","UpgradePopUp");
 			var timer = setInterval(function(){
 				if(w.closed){
 					clearInterval(timer);
 					x++;
-					callback(callback);
+					if(x < times){
+						upgrade();
+					}
 				} else {
 					if(w.$(".alert-success").length > 0){
 						w.close();
@@ -71,15 +125,15 @@
 				}
 			},1000);
 		}
-		if(upgradableServers.length < 1){ alert("There are no servers to upgrade."); return false;}
-		openUpgrade(openUpgrade);
+		upgrade();
 	}
-	function getUpgradeURL(index){
-		var ret = $(".span4 .widget-box .widget-title a").get(index);
-		console.log(index);
-		return ret.href;
+	
+	function buyHDD(){
+		$(document).ready(function(){
+			$("form")[1].submit();
+		});
 	}
-
+	
 	function markNotFullUpgradedServers(){
 		$(".span4 .widget-title").css("background-color","yellow"); $(".span4 .widget-title").css("background-image","none");
 	}
@@ -172,7 +226,7 @@
 	function loadUpgradeFunc(){
 		addNavButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
 		$(document).ready(function(){
-			$("#LogfroHWAutoUpgradeAll").on("click",function(){ initUpgradeAllMaxedOut();});
+			$("#LogfroHWAutoUpgradeAll").on("click",function(){ interval = setInterval(upgrade,1250);});
 		});
 	}
 	
@@ -183,6 +237,25 @@
         });
 	}
 
+	function loadHDDUpgradeBtn(){
+		$(document).ready(function(){
+			var btn = document.createElement("input");
+			var input = document.createElement("input");
+			input.type = "text";
+			input.id = "LogfroHDDUpgradeBtnTimes";
+			input.style = "margin: 10px;"
+			input.placeholder = "How many times?";
+			btn.className = "btn btn-success";
+			btn.id = "LogfroHDDUpgradeBtn";
+			btn.value = "Upgrade selected times";
+			btn.type = "button";
+			$("form")[0].appendChild(btn);
+			$("form")[0].appendChild(input);
+			$("#LogfroHDDUpgradeBtn").on("click", function(){buyNewHDD($("#LogfroHDDUpgradeBtnTimes")[0].value);});
+			addNavButton("Auto upgrade Ext. HDD (Maxed out)","LogfroAutoUpgradeHDDMaxedOut");
+			$("#LogfroAutoUpgradeHDDMaxedOut").on("click", function(){upgradeHDDMaxedOut();});
+		});
+	}
 	loadClearOwnLogBtn();
 	
     switch(window.location.href){
@@ -207,12 +280,18 @@
 		case "https://legacy.hackerexperience.com/list?action=collect&show=last":
 			clearOwnLogs();
 			break;
+		case "https://legacy.hackerexperience.com/hardware?opt=xhd":
+			loadHDDUpgradeBtn();
+			break;
         default:
             break;
 
     }
 	if(window.location.href.indexOf("#UpgradeScript") > -1){
 		upgradeServerMax();
+	}
+	if(window.location.href.indexOf("https://legacy.hackerexperience.com/hardware?opt=xhd&acc=") > -1){
+		buyHDD();
 	}
 	var realConfirm=window.confirm;
 		window.confirm=function(){
