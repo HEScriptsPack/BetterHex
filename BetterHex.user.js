@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.44
+// @version      0.45
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -10,7 +10,6 @@
 // @grant        none
 // ==/UserScript==
 
-const account = '874999969';
 var totalServers = $(".widget-content.padding > ul > a").length;
 var index = 0;
 var interval;
@@ -36,7 +35,7 @@ var interval;
     };
 	
 	/* Thanks Omega for this Function */
-	function upgrade(){
+	function upgrade(acc){
 		$('.label.label-info').html("Completed: " + index + "/" + totalServers);
 
 		var server = $(".widget-content.padding > ul > a").eq(index);
@@ -58,11 +57,12 @@ var interval;
 		else
 		{
 			var serverID = server.attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
-			getData('upgrade', serverID);
+			getData('upgrade', serverID, acc);
 		}
 	}
 
-	function getData(itemToBuy, id){
+	/* Thanks Omega for this Function */
+	function getData(itemToBuy, id, account){
 		$.ajax({
 			type: 'GET',
 			url: "/hardware?opt=" + itemToBuy + "&id=" + id,
@@ -72,14 +72,15 @@ var interval;
 			},
 			success: function(data) {
 				console.log("Success");
-				postData('cpu','5000','8');
-				postData('hdd','8000','6');
+				postData('cpu','5000','8', account);
+				postData('hdd','8000','6', account);
 				index++;
 			}
 		});
 	}
 
-	function postData(itemToBuy, itemCost, itemId){
+	/* Thanks Omega for this Function */
+	function postData(itemToBuy, itemCost, itemId, account){
 		var dataObject = {};
 		dataObject.acc = account;
 		dataObject.act = itemToBuy;
@@ -226,7 +227,7 @@ var interval;
 	function loadUpgradeFunc(){
 		addNavButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
 		$(document).ready(function(){
-			$("#LogfroHWAutoUpgradeAll").on("click",function(){ interval = setInterval(upgrade,1250);});
+			$("#LogfroHWAutoUpgradeAll").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgrade(x),1250);}});
 		});
 	}
 	
