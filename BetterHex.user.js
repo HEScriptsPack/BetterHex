@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.45
+// @version      0.46
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -16,7 +16,7 @@ var interval;
 
 (function() {
     'use strict';
-    function clearLogs(){
+    function clearLogs(ram){
             var elm = document.getElementsByName("log")[0];
             var x = elm.value;
             var ownIP = document.getElementsByClassName("header-ip-show")[0].innerHTML;
@@ -35,7 +35,7 @@ var interval;
     };
 	
 	/* Thanks Omega for this Function */
-	function upgrade(acc){
+	function upgradeWORAM(acc){
 		$('.label.label-info').html("Completed: " + index + "/" + totalServers);
 
 		var server = $(".widget-content.padding > ul > a").eq(index);
@@ -57,12 +57,40 @@ var interval;
 		else
 		{
 			var serverID = server.attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
-			getData('upgrade', serverID, acc);
+			getDataWORAM('upgrade', serverID, acc);
 		}
 	}
 
+	function upgradeWRAM(acc){
+		$('.label.label-info').html("Completed: " + index + "/" + totalServers);
+
+		var server = $(".widget-content.padding > ul > a").eq(index);
+		var cpuUnit = server.find(".list-user > small").eq(0).text();
+		var hddUnit = server.find(".list-user > small").eq(1).text();
+		var ramUnit = server.find(".list-user > small").eq(2).text();
+
+		while(cpuUnit == "4 GHz" && hddUnit == "10 GB" && ramUnit == "2048 MB" && index < totalServers)
+		{
+			index++;
+			server = $(".widget-content.padding > ul > a").eq(index);
+			cpuUnit = server.find(".list-user > small").eq(0).text();
+			hddUnit = server.find(".list-user > small").eq(1).text();
+			ramUnit = server.find(".list-user > small").eq(2).text();
+		}
+		if(index >= totalServers)
+		{
+			clearInterval(interval);
+			$('.label.label-info').html("Done :)");
+		}
+		else
+		{
+			var serverID = server.attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
+			getDataWRAM('upgrade', serverID, acc);
+		}
+	}
+	
 	/* Thanks Omega for this Function */
-	function getData(itemToBuy, id, account){
+	function getDataWORAM(itemToBuy, id, account){
 		$.ajax({
 			type: 'GET',
 			url: "/hardware?opt=" + itemToBuy + "&id=" + id,
@@ -74,6 +102,25 @@ var interval;
 				console.log("Success");
 				postData('cpu','5000','8', account);
 				postData('hdd','8000','6', account);
+				index++;
+			}
+		});
+	}
+
+	
+	function getDataWRAM(itemToBuy, id, account){
+		$.ajax({
+			type: 'GET',
+			url: "/hardware?opt=" + itemToBuy + "&id=" + id,
+			data: {
+				opt: itemToBuy,
+				acc: account
+			},
+			success: function(data) {
+				console.log("Success");
+				postData('cpu','5000','8', account);
+				postData('hdd','8000','6', account);
+				postData('ram','2500','4', account);
 				index++;
 			}
 		});
@@ -224,10 +271,17 @@ var interval;
         });
     }
 
-	function loadUpgradeFunc(){
+	function loadUpgradeFuncWORAM(){
 		addNavButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
 		$(document).ready(function(){
-			$("#LogfroHWAutoUpgradeAll").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgrade(x),1250);}});
+			$("#LogfroHWAutoUpgradeAll").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWORAM(x),1250);}});
+		});
+	}
+	
+	function loadUpgradeFuncWRAM(){
+		addNavButton("Auto Upgrade all (Maxed out, with RAM)","LogfroHWAutoUpgradeAllWRAM");
+		$(document).ready(function(){
+			$("#LogfroHWAutoUpgradeAllWRAM").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWRAM(x),1250);}});
 		});
 	}
 	
@@ -244,7 +298,7 @@ var interval;
 			var input = document.createElement("input");
 			input.type = "text";
 			input.id = "LogfroHDDUpgradeBtnTimes";
-			input.style = "margin: 10px;"
+			input.style = "margin: 10px;";
 			input.placeholder = "How many times?";
 			btn.className = "btn btn-success";
 			btn.id = "LogfroHDDUpgradeBtn";
@@ -276,7 +330,8 @@ var interval;
 			}
 			break;
 		case "https://legacy.hackerexperience.com/hardware":
-			loadUpgradeFunc();
+			loadUpgradeFuncWORAM();
+			loadUpgradeFuncWRAM();
 			break;
 		case "https://legacy.hackerexperience.com/list?action=collect&show=last":
 			clearOwnLogs();
