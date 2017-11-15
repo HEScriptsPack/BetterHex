@@ -270,18 +270,20 @@ var interval;
 			$("#LogfroLogClickID").on("click", function(){clearLogs();});
         });
     }
-
+	
 	function loadUpgradeFuncWORAM(){
 		addNavButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
 		$(document).ready(function(){
-			$("#LogfroHWAutoUpgradeAll").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWORAM(x),1250);}});
+			// $("#LogfroHWAutoUpgradeAll").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWORAM(x),1250);}});
+			alert("Currently not working");
 		});
 	}
 	
 	function loadUpgradeFuncWRAM(){
 		addNavButton("Auto Upgrade all (Maxed out, with RAM)","LogfroHWAutoUpgradeAllWRAM");
 		$(document).ready(function(){
-			$("#LogfroHWAutoUpgradeAllWRAM").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWRAM(x),1250);}});
+			// $("#LogfroHWAutoUpgradeAllWRAM").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWRAM(x),1250);}});
+			alert("Currently not working");
 		});
 	}
 	
