@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better HEx by Logfro
 // @namespace    https://logfro.de/
-// @version      0.48
+// @version      0.49
 // @description  Better HEx adds useful functions to the legacy hacker experience
 // @author       Logfro
 // @match        https://legacy.hackerexperience.com/*
@@ -31,10 +31,11 @@
     };
 	
 	/* Thanks Omega for this Function */
-    function upgradeCPU(acc){
+    function upgradeCPU(){
         var servers = $(".widget-content.padding > ul > a");
         var nextIndex = -1;
         var serverLink = "";
+        const acc = localStorage.getItem("acc");
 
         //Find CPU link
         servers.each(function(index) {
@@ -49,7 +50,7 @@
 
         if(nextIndex == -1)
         {
-            //window.alert("All CPUs are already upgraded!");
+            localStorage.setItem("active","false");
             return false;
         }
         else if($('div.span8 > div:nth-child(1) > div.widget-content.nopadding > table > tbody > tr').length > 1)
@@ -69,10 +70,11 @@
     }
 
     /* Thanks Omega for this Function */
-    function upgradeHDD(acc){
+    function upgradeHDD(){
         var servers = $(".widget-content.padding > ul > a");
         var nextIndex = -1;
         var serverLink = "";
+        const acc = localStorage.getItem("acc");
 
         //Find HDD link
         servers.each(function(index) {
@@ -87,7 +89,7 @@
 
         if(nextIndex == -1)
         {
-            //window.alert("All HDDs are already upgraded!");
+            localStorage.setItem("active","false");
             return false;
         }
         else if($('div.span8 > div:nth-child(2) > div.widget-content.nopadding > table > tbody > tr').length > 1)
@@ -223,8 +225,14 @@
 		addNavButton("Auto Upgrade CPU","LogfroHWAutoUpgradeCPU");
 		$(document).ready(function(){
 			$("#LogfroHWAutoUpgradeCPU").on("click",function(){
-                var acc = prompt("Input your bank account #");
-                upgradeCPU(acc);
+                if(localStorage.getItem("acc").empty()){
+                    var acc = prompt("Input your bank account #");
+                    localStorage.setItem("acc",acc);
+                }
+                if(!acc.empty() && localStorage.getItem("active") != "true"){
+                    localStorage.setItem("active","true");
+                    upgradeCPU();
+                }
 			});
 		});
 	}
@@ -233,8 +241,14 @@
 		addNavButton("Auto Upgrade HDD","LogfroHWAutoUpgradeHDD");
 		$(document).ready(function(){
 			$("#LogfroHWAutoUpgradeHDD").on("click",function(){
-				var acc = prompt("Input your bank account #");
-				upgradeHDD(acc);
+			    if(localStorage.getItem("acc").empty()){
+				    var acc = prompt("Input your bank account #");
+				    localStorage.setItem("acc",acc);
+                }
+                if(!acc.empty() && localStorage.getItem("active") != "true"){
+                    localStorage.setItem("active","true");
+                    upgradeHDD();
+                }
 			});
 		});
 	}
@@ -284,8 +298,12 @@
 			}
 			break;
 		case "https://legacy.hackerexperience.com/hardware":
-            loadUpgradeHDDOfServer();
-            loadUpgradeCPUOfServer();
+		    if(localStorage.getItem("active") != "true"){
+                loadUpgradeHDDOfServer();
+                loadUpgradeCPUOfServer();
+            } else {
+
+            }
 			break;
 		case "https://legacy.hackerexperience.com/list?action=collect&show=last":
 			clearOwnLogs();
