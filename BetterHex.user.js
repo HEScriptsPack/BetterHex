@@ -10,10 +10,6 @@
 // @grant        none
 // ==/UserScript==
 
-var totalServers = $(".widget-content.padding > ul > a").length;
-var index = 0;
-var interval;
-
 (function() {
     'use strict';
     function clearLogs(ram){
@@ -35,114 +31,83 @@ var interval;
     };
 	
 	/* Thanks Omega for this Function */
-	function upgradeWORAM(acc){
-		$('.label.label-info').html("Completed: " + index + "/" + totalServers);
+    function upgradeCPU(acc){
+        var servers = $(".widget-content.padding > ul > a");
+        var nextIndex = -1;
+        var serverLink = "";
 
-		var server = $(".widget-content.padding > ul > a").eq(index);
-		var cpuUnit = server.find(".list-user > small").eq(0).text();
-		var hddUnit = server.find(".list-user > small").eq(1).text();
+        //Find CPU link
+        servers.each(function(index) {
+            var cpuUnit = $(this).find(".list-user > small").eq(0).text();
+            if(cpuUnit != "4 GHz")
+            {
+                nextIndex = index;
+                serverLink = "https://legacy.hackerexperience.com/hardware?opt=upgrade&id=" + $(this).attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
+                return false;
+            }
+        });
 
-		while(cpuUnit == "4 GHz" && hddUnit == "10 GB" && index < totalServers)
-		{
-			index++;
-			server = $(".widget-content.padding > ul > a").eq(index);
-			cpuUnit = server.find(".list-user > small").eq(0).text();
-			hddUnit = server.find(".list-user > small").eq(1).text();
-		}
-		if(index >= totalServers)
-		{
-			clearInterval(interval);
-			$('.label.label-info').html("Done :)");
-		}
-		else
-		{
-			var serverID = server.attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
-			getDataWORAM('upgrade', serverID, acc);
-		}
-	}
+        if(nextIndex == -1)
+        {
+            //window.alert("All CPUs are already upgraded!");
+            return false;
+        }
+        else if($('div.span8 > div:nth-child(1) > div.widget-content.nopadding > table > tbody > tr').length > 1)
+        {
+            //Buy the CPU
+            var dataObject = {};
+            dataObject.acc = acc;
+            dataObject.act = 'cpu';
+            dataObject['part-id'] = '8';
+            dataObject.price = '5000';
+            $.ajax({
+                type: 'POST',
+                data: dataObject
+            });
+        }
+        window.location = serverLink;
+    }
 
-	function upgradeWRAM(acc){
-		$('.label.label-info').html("Completed: " + index + "/" + totalServers);
+    /* Thanks Omega for this Function */
+    function upgradeHDD(acc){
+        var servers = $(".widget-content.padding > ul > a");
+        var nextIndex = -1;
+        var serverLink = "";
 
-		var server = $(".widget-content.padding > ul > a").eq(index);
-		var cpuUnit = server.find(".list-user > small").eq(0).text();
-		var hddUnit = server.find(".list-user > small").eq(1).text();
-		var ramUnit = server.find(".list-user > small").eq(2).text();
+        //Find HDD link
+        servers.each(function(index) {
+            var hddUnit = $(this).find(".list-user > small").eq(1).text();
+            if(hddUnit != "10 GB")
+            {
+                nextIndex = index;
+                serverLink = "https://legacy.hackerexperience.com/hardware?opt=upgrade&id=" + $(this).attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
+                return false;
+            }
+        });
 
-		while(cpuUnit == "4 GHz" && hddUnit == "10 GB" && ramUnit == "2048 MB" && index < totalServers)
-		{
-			index++;
-			server = $(".widget-content.padding > ul > a").eq(index);
-			cpuUnit = server.find(".list-user > small").eq(0).text();
-			hddUnit = server.find(".list-user > small").eq(1).text();
-			ramUnit = server.find(".list-user > small").eq(2).text();
-		}
-		if(index >= totalServers)
-		{
-			clearInterval(interval);
-			$('.label.label-info').html("Done :)");
-		}
-		else
-		{
-			var serverID = server.attr('href').replace("?opt=upgrade&id=","").replace("hardware","");
-			getDataWRAM('upgrade', serverID, acc);
-		}
-	}
-	
-	/* Thanks Omega for this Function */
-	function getDataWORAM(itemToBuy, id, account){
-		$.ajax({
-			type: 'GET',
-			url: "/hardware?opt=" + itemToBuy + "&id=" + id,
-			data: {
-				opt: itemToBuy,
-				acc: account
-			},
-			success: function(data) {
-				console.log("Success");
-				postData('cpu','5000','8', account);
-				postData('hdd','8000','6', account);
-				index++;
-			}
-		});
-	}
+        if(nextIndex == -1)
+        {
+            //window.alert("All HDDs are already upgraded!");
+            return false;
+        }
+        else if($('div.span8 > div:nth-child(2) > div.widget-content.nopadding > table > tbody > tr').length > 1)
+        {
+            //Buy the HDD
+            var dataObject = {};
+            dataObject.acc = acc;
+            dataObject.act = 'hdd';
+            dataObject['part-id'] = '6';
+            dataObject.price = '8000';
+            $.ajax({
+                type: 'POST',
+                data: dataObject
+            });
+        }
+        window.location = serverLink;
+    }
 
-	
-	function getDataWRAM(itemToBuy, id, account){
-		$.ajax({
-			type: 'GET',
-			url: "/hardware?opt=" + itemToBuy + "&id=" + id,
-			data: {
-				opt: itemToBuy,
-				acc: account
-			},
-			success: function(data) {
-				console.log("Success");
-				postData('cpu','5000','8', account);
-				postData('hdd','8000','6', account);
-				postData('ram','2500','4', account);
-				index++;
-			}
-		});
-	}
 
-	/* Thanks Omega for this Function */
-	function postData(itemToBuy, itemCost, itemId, account){
-		var dataObject = {};
-		dataObject.acc = account;
-		dataObject.act = itemToBuy;
-		dataObject['part-id'] = itemId;
-		dataObject.price = itemCost;
-		$.ajax({
-			type: 'POST',
-			data: dataObject,
-			error: function() {
-			console.log("Already upgraded!");
-		}
-		});
-	}
-	
-	function upgradeHDDMaxedOut(){
+    function upgradeHDDMaxedOut(){
 		
 	}
 
@@ -184,23 +149,6 @@ var interval;
 	
 	function markNotFullUpgradedServers(){
 		$(".span4 .widget-title").css("background-color","yellow"); $(".span4 .widget-title").css("background-image","none");
-	}
-	function checkForBestServer(index, item, upgradableServers, type){
-		if(type == "cpu"){
-			if($(item).children().get(1).innerHTML != "4 GHz"){
-				console.log("GHZ "+$(item).children().get(1).innerHTML+" von index "+index);
-				var z = upgradableServers.length;
-				upgradableServers[z] = index;
-			}
-		}
-		if(type == "hdd"){
-			if($(item).children().get(3).innerHTML != "10 GB"){
-				console.log("GB "+$(item).children().get(3).innerHTML+" von index "+index);
-				var y = upgradableServers.length;
-				upgradableServers[y] = index;
-			}
-		}
-		return upgradableServers;
 	}
 
 	function openPopUp(url, name){
@@ -271,19 +219,23 @@ var interval;
         });
     }
 	
-	function loadUpgradeFuncWORAM(){
-		addNavButton("Auto Upgrade all (Maxed out, except RAM)","LogfroHWAutoUpgradeAll");
+	function loadUpgradeCPUOfServer(){
+		addNavButton("Auto Upgrade CPU","LogfroHWAutoUpgradeCPU");
 		$(document).ready(function(){
-			// $("#LogfroHWAutoUpgradeAll").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWORAM(x),1250);}});
-			$("#LogfroHWAutoUpgradeAll").on("click",function(){alert("Currently not working")});
+			$("#LogfroHWAutoUpgradeCPU").on("click",function(){
+                var acc = prompt("Input your bank account #");
+                upgradeCPU(acc);
+			});
 		});
 	}
 	
-	function loadUpgradeFuncWRAM(){
-		addNavButton("Auto Upgrade all (Maxed out, with RAM)","LogfroHWAutoUpgradeAllWRAM");
+	function loadUpgradeHDDOfServer(){
+		addNavButton("Auto Upgrade HDD","LogfroHWAutoUpgradeHDD");
 		$(document).ready(function(){
-			// $("#LogfroHWAutoUpgradeAllWRAM").on("click",function(){var x = prompt("Please put in your bank account id"); if(x.length > 0){ interval = setInterval(upgradeWRAM(x),1250);}});
-			$("#LogfroHWAutoUpgradeAllWRAM").on("click",function(){alert("Currently not working")});
+			$("#LogfroHWAutoUpgradeHDD").on("click",function(){
+				var acc = prompt("Input your bank account #");
+				upgradeHDD(acc);
+			});
 		});
 	}
 	
@@ -332,8 +284,8 @@ var interval;
 			}
 			break;
 		case "https://legacy.hackerexperience.com/hardware":
-			loadUpgradeFuncWORAM();
-			loadUpgradeFuncWRAM();
+            loadUpgradeHDDOfServer();
+            loadUpgradeCPUOfServer();
 			break;
 		case "https://legacy.hackerexperience.com/list?action=collect&show=last":
 			clearOwnLogs();
