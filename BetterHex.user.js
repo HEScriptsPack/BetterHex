@@ -9,7 +9,7 @@
 // @downloadURL  https://gitcdn.xyz/repo/Logfro/BetterHex/master/BetterHex.user.js
 // @grant        none
 // ==/UserScript==
-const acc = "993776179";
+const acc = "ENTERACCNUMBERHERE";
 (function() {
     'use strict';
     function clearLogs(ram){
